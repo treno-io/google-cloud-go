@@ -71,9 +71,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	if err != nil {
 		return nil, err
 	}
+
 	// Add gRPC client interceptors to supply Google client information. No external interceptors are passed.
 	o = append(o, btopt.ClientInterceptorOptions(nil, nil)...)
-
 	// Default to a small connection pool that can be overridden.
 	o = append(o,
 		option.WithGRPCConnectionPool(4),
@@ -84,7 +84,14 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// whether the attempt is allowed is totally controlled by service owner.
 	o = append(o, internaloption.EnableDirectPath(true))
 	o = append(o, opts...)
-	connPool, err := gtransport.DialPool(ctx, o...)
+
+	return NewClientWithOptions(ctx, project, instance, config, o...)
+}
+
+// NewClientWithOptions creates a new client with the given config and options,
+// which are expected to be comprehensive. No default options are used.
+func NewClientWithOptions(ctx context.Context, project, instance string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
+	connPool, err := gtransport.DialPool(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
