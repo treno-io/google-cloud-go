@@ -85,13 +85,13 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	o = append(o, internaloption.EnableDirectPath(true))
 	o = append(o, opts...)
 
-	return NewClientWithOptions(cxt, project, instance, config, o...)
+	return NewClientWithOptions(ctx, project, instance, config, o...)
 }
 
 // NewClientWithOptions creates a new client with the given config and options,
 // which are expected to be comprehensive. No default options are used.
 func NewClientWithOptions(ctx context.Context, project, instance string, config ClientConfig, opts ...option.ClientOption) (*Client, error) {
-	connPool, err := gtransport.DialPool(ctx, o...)
+	connPool, err := gtransport.DialPool(ctx, opts...)
 	if err != nil {
 		return nil, fmt.Errorf("dialing: %v", err)
 	}
